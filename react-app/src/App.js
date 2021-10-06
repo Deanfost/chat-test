@@ -1,34 +1,35 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import io from 'socket.io-client';
-import Messages from './Messages';
-import MessageInput from './MessageInput';
-
+import MessageList from './MessageList';
 import './App.css';
 
-function App() {
-  const [socket, setSocket] = useState(null);
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {messages: [], room: '', user: ''};
+    this.socket = io('localhost:3000');
+  }
 
-  useEffect(() => {
-    const newSocket = io(`http://${window.location.hostname}:3000`);
-    setSocket(newSocket);
-    return () => newSocket.close();
-  }, [setSocket]);
+  componentDidMount() {
+    // Setup socket connection
 
-  return (
-    <div className="App">
-      <header className="app-header">
-        React Chat
-      </header>
-      { socket ? (
-        <div className="chat-container">
-          <Messages socket={socket} />
-          <MessageInput socket={socket} />
+  }
+
+  componentWillUnmount() {
+    // Destroy socket connection
+    
+  }
+
+  render() {
+    return (
+      <div>
+        <div className=".room-div">
+          <button>Join room</button>
         </div>
-      ) : (
-        <div>Not Connected</div>
-      )}
-    </div>
-  );
+        <MessageList messages={[]}></MessageList>
+      </div>
+    );
+  }
 }
 
 export default App;
