@@ -10,7 +10,7 @@ import ScrollToBottom from 'react-scroll-to-bottom';
 import { Box, Flex, Heading, IconButton, Text, Menu, Button, MenuButton, MenuList, MenuItem } from "@chakra-ui/react"
 
 const Chat = () => {
-	const { name, room, setName, setRoom } = useContext(MainContext);
+	const { username, room, setName, setRoom } = useContext(MainContext);
 	const socket = useContext(SocketContext);
 	const { users } = useContext(UsersContext);
 	const [message, setMessage] = useState('');
@@ -20,8 +20,8 @@ const Chat = () => {
 	window.onpopstate = (e) => logout();
 	//Checks to see if there's a user present
 	useEffect(() => {
-		if (!name) return history.push('/');
-	}, [history, name]);
+		if (!username) return history.push('/');
+	}, [history, username]);
 
 	useEffect(() => {
 		socket.on('receive_msg', (msg) => {
@@ -70,7 +70,7 @@ const Chat = () => {
 									return (
 										<MenuItem minH="40px" key={user.id}>
 											<Text fontSize="sm">
-												{user.name}
+												{user.username}
 											</Text>
 										</MenuItem>
 									);
@@ -94,7 +94,7 @@ const Chat = () => {
 								opacity=".7"
 								letterSpacing="0"
 							>
-								{name}
+								{username}
 							</Text>
 							<Box
 								h={2}
@@ -116,7 +116,7 @@ const Chat = () => {
 						<Box
 							key={i}
 							className={`message ${
-								msg.user === name ? 'my-message' : ''
+								msg.user === username ? 'my-message' : ''
 							}`}
 							m=".2rem 0"
 						>
