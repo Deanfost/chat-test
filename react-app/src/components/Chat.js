@@ -16,3 +16,5 @@ const Chat = () => {
 	const [messages, setMessages] = useState([]);
     const history = useHistory()
 };
+
+export default Chat
