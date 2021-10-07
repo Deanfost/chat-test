@@ -1,10 +1,14 @@
+from logging import DEBUG
 from flask import Flask
+from flask_cors import CORS
 from flask.globals import request
 from flask_socketio import SocketIO, emit, join_room, leave_room
 
 app = Flask(__name__)
+CORS(app)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
+socketio.init_app(app, cors_allowed_origins="*")
 
 connected_clients = 0
 
@@ -59,5 +63,5 @@ def on_get_status():
     emit('get_status', status, json=True)
 
 if __name__ == '__main__':
-    socketio.run(app)
+    socketio.run(app, debug=True)
 
