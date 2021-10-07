@@ -35,7 +35,7 @@ def on_join(data):
     room = data['room']
     join_room(room)
     rooms.append(room)
-    emit('user_joined', username, to=room, include_self=False)
+    emit('user_joined', username, to=room)
     print('{} has joined room: {}'.format(username, room))
 
 # A socket has left a room
@@ -53,8 +53,8 @@ def on_message(data):
     username = data['username']
     content = data['content']
     room = data['room']
-    print('({}) Message from {}: {}'.format(room, username, content))
-    emit('receive_msg', data, to=room, include_self=False, json=True)
+    print('(Room:{}) Message from {}: {}'.format(room, username, content))
+    emit('receive_msg', data, to=room, json=True)
 
 # Get the created rooms list and client count
 @socketio.on('get_status')

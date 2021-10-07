@@ -7,7 +7,18 @@ import { FiList } from 'react-icons/fi';
 import { BiMessageDetail } from 'react-icons/bi';
 import { RiSendPlaneFill } from 'react-icons/ri';
 import ScrollToBottom from 'react-scroll-to-bottom';
-import { Box, Flex, Heading, IconButton, Text, Menu, Button, MenuButton, MenuList, MenuItem } from "@chakra-ui/react"
+import {
+	Box,
+	Flex,
+	Heading,
+	IconButton,
+	Text,
+	Menu,
+	Button,
+	MenuButton,
+	MenuList,
+	MenuItem
+} from '@chakra-ui/react';
 
 const Chat = () => {
 	const { username, room, setName, setRoom } = useContext(MainContext);
@@ -24,17 +35,25 @@ const Chat = () => {
 	}, [history, username]);
 
 	useEffect(() => {
-		socket.on('receive_msg', (msg) => {
-			setMessages((messages) => [...messages, msg]);
+		let isMounted = true;
+		socket.on('receive_msg', (data) => {
+			let { username, content } = data;
+			if (isMounted)
+				setMessages((messages) => [...messages, { username, content }]);
 		});
+		return () => {
+			isMounted = false;
+		};
 	}, [socket]);
 
 	const handleSendMessage = () => {
-		socket.emit('send_msg', message, () => setMessage(''));
+		let data = { username: username, content: message, room: room };
+		socket.emit('send_msg', data, () => setMessage(''));
 		setMessage('');
 	};
 
 	const logout = () => {
+		socket.emit('leave', { username, room });
 		setName('');
 		setRoom('');
 		history.push('/');
@@ -112,34 +131,38 @@ const Chat = () => {
 
 			<ScrollToBottom className="messages" debug={false}>
 				{messages.length > 0 ? (
-					messages.map((msg, i) => (
-						<Box
-							key={i}
-							className={`message ${
-								msg.user === username ? 'my-message' : ''
-							}`}
-							m=".2rem 0"
-						>
-							<Text
-								fontSize="xs"
-								opacity=".7"
-								ml="5px"
-								className="user"
+					messages.map((msg, i) => {
+						return (
+							<Box
+								key={i}
+								className={`message ${
+									msg.username === username
+										? 'my-message'
+										: ''
+								}`}
+								m=".2rem 0"
 							>
-								{msg.user}
-							</Text>
-							<Text
-								fontSize="sm"
-								className="msg"
-								p=".4rem .8rem"
-								bg="white"
-								borderRadius="15px"
-								color="white"
-							>
-								{msg.text}
-							</Text>
-						</Box>
-					))
+								<Text
+									fontSize="xs"
+									opacity=".7"
+									ml="5px"
+									className="user"
+								>
+									{msg.username}
+								</Text>
+								<Text
+									fontSize="sm"
+									className="msg"
+									p=".4rem .8rem"
+									bg="white"
+									borderRadius="15px"
+									color="black"
+								>
+									{msg.content}
+								</Text>
+							</Box>
+						);
+					})
 				) : (
 					<Flex
 						alignItems="center"
